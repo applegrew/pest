@@ -244,49 +244,74 @@ fn generate_rule(rule: OptimizedRule) -> TokenStream {
             #[inline]
             #[allow(non_snake_case, unused_variables)]
             pub fn #name(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                state.rule(Rule::#name, |state| {
+                let state_str = format!("{:?}", state);
+                let ag_start = std::time::Instant::now();
+                let ret = state.rule(Rule::#name, |state| {
                     #expr
-                })
+                });
+                let ag_end = std::time::Instant::now();
+                println!("_____{:?} ({}ms) -{}", Rule::#name, ag_end.saturating_duration_since(ag_start).as_millis(), state_str);
+                ret
             }
         },
         RuleType::Silent => quote! {
             #[inline]
             #[allow(non_snake_case, unused_variables)]
             pub fn #name(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                #expr
+                let state_str = format!("{:?}", state);
+                let ag_start = std::time::Instant::now();
+                let ret = #expr;
+                let ag_end = std::time::Instant::now();
+                println!("_____{:?} ({}ms) -{}", Rule::#name, ag_end.saturating_duration_since(ag_start).as_millis(), state_str);
+                ret
             }
         },
         RuleType::Atomic => quote! {
             #[inline]
             #[allow(non_snake_case, unused_variables)]
             pub fn #name(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                state.rule(Rule::#name, |state| {
+                let state_str = format!("{:?}", state);
+                let ag_start = std::time::Instant::now();
+                let ret = state.rule(Rule::#name, |state| {
                     state.atomic(::pest::Atomicity::Atomic, |state| {
                         #expr
                     })
-                })
+                });
+                let ag_end = std::time::Instant::now();
+                println!("_____{:?} ({}ms) -{}", Rule::#name, ag_end.saturating_duration_since(ag_start).as_millis(), state_str);
+                ret
             }
         },
         RuleType::CompoundAtomic => quote! {
             #[inline]
             #[allow(non_snake_case, unused_variables)]
             pub fn #name(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                state.atomic(::pest::Atomicity::CompoundAtomic, |state| {
+                let state_str = format!("{:?}", state);
+                let ag_start = std::time::Instant::now();
+                let ret = state.atomic(::pest::Atomicity::CompoundAtomic, |state| {
                     state.rule(Rule::#name, |state| {
                         #expr
                     })
-                })
+                });
+                let ag_end = std::time::Instant::now();
+                println!("_____{:?} ({}ms) -{}", Rule::#name, ag_end.saturating_duration_since(ag_start).as_millis(), state_str);
+                ret
             }
         },
         RuleType::NonAtomic => quote! {
             #[inline]
             #[allow(non_snake_case, unused_variables)]
             pub fn #name(state: Box<::pest::ParserState<Rule>>) -> ::pest::ParseResult<Box<::pest::ParserState<Rule>>> {
-                state.atomic(::pest::Atomicity::NonAtomic, |state| {
+                let state_str = format!("{:?}", state);
+                let ag_start = std::time::Instant::now();
+                let ret = state.atomic(::pest::Atomicity::NonAtomic, |state| {
                     state.rule(Rule::#name, |state| {
                         #expr
                     })
-                })
+                });
+                let ag_end = std::time::Instant::now();
+                println!("_____{:?} ({}ms) -{}", Rule::#name, ag_end.saturating_duration_since(ag_start).as_millis(), state_str);
+                ret
             }
         },
     }
